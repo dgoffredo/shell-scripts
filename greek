@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Make right-alt the "dead greek" key, which can be used like
+# shift to enter Greek characters instead of Latin (e.g. λ).
+# Note: To figure out that 108, use: xev | grep keycode
+xmodmap -e 'keycode 108 = dead_greek dead_greek dead_greek dead_greek'
