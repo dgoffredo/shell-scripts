@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Show lines in ~/.bash_history matching a specified grep pattern,
+# and show them in `less` (scrolled to the end).
+
+# the "+G" in `less` means "scroll to the end"
+# ... "-R"       ...       "let colors through"
+nl ~/.bash_history | grep --color=always "$@" | less -R +G
+
