@@ -1,8 +1,7 @@
 Shell Scripts
 =============
-I reinstalled my operating system and forgot to backup my scripts.
-
-Never again.
+I reinstalled my operating system and forgot to backup my scripts.  Now I'm
+rewriting them as I need them, and putting them here.
 
 Why
 ---
