@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Print my public IP address to standard output.
+# Uses opendns.com DNS resolvers to resolve the (public) IP address of the
+# current host.
+# See <https://unix.stackexchange.com/a/81699>.
+
+# dependencies: dig
+
+# command line parsing
+if [ $# -eq 1 ] && [ "$1" = "-v" -o "$1" = "--verbose" ]; then
+    log() {
+        >&2 echo "$@"
+    }
+elif [ $# -ne 0 ]; then
+    >&2 echo "usage: $0 [ -v | --verbose ]"
+    exit 1
+else
+    log() {
+        :
+    }
+fi
+
+# resolver4.opendns.com, resolver3..., etc.
+servers=""
+for i in $(seq 4 -1 1); do
+    servers="$servers resolver$i.opendns.com"
+done
+
+# Try servers until `dig` succeeds _and_ prints an IP.
+for server in $servers; do
+    log "trying server $server"
+    if ip=$(dig +short myip.opendns.com @$server) && [ -n "$ip" ]; then
+        # success
+        echo $ip
+        exit 0
+    fi
+done
+
+log "None of the servers responded with an IP."
+exit 2
