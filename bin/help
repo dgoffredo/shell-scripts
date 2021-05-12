@@ -1,0 +1,17 @@
+#!/bin/sh
+
+cat <<END_HELP
+To install symbolic links to these scripts in ~/bin, run:
+
+    $ make install
+
+It will not overwrite existing files in ~/bin.
+
+To uninstall symbolic links in ~/bin that were installed previously, run:
+
+    $ make uninstall
+
+It will only remove files that are symbolic links to scripts in this
+repository.
+
+END_HELP

@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# This script is invoked by ../Makefile
+# It creates symbolic links in $PREFIX for all specified scriptss that don't
+# already have a link in $PREFIX
+
+# usage: bin/install ./myip ./lanscan [ ... ]
+
+# Exit if a command fails (outside of an `if` or loop condition).
+set -e
+
+PREFIX=${PREFIX:-~/bin}
+
+if ! [ -d "$PREFIX" ]; then
+    >&2 echo "error: $PREFIX is not a directory"
+    exit 1
+fi
+
+# cases, for each script:
+# - no file in $PREFIX with same name as script, ok.
+# - symlink in $PREFIX that already links to this script, ok.
+# - file already in $PREFIX that isn't a symlink to this script, error.
+
+# $added is the list of scripts that were added by install.
+# It's used to rollback on error.
+added=""
+rollback() {
+    for script in $added; do
+        echo "removing $PREFIX/$script"
+        rm "$PREFIX"/$script
+    done
+}
+
+for script_path in "$@"; do
+    script=$(basename $script_path)
+    script_full_path=$(realpath $script_path)
+    if [ -e "$PREFIX"/$script ] && [ "$(realpath "$PREFIX"/$script)" != "$script_full_path" ]; then
+        >&2 echo "error: $PREFIX/$script already exists and is not a link to $script_path"
+        rollback
+        exit 2
+    elif ! [ -e "$PREFIX"/$script ]; then
+        echo "creating  $PREFIX/$script  ->  $script_full_path"
+        ln -s "$script_full_path" "$PREFIX"/$script
+        added="$added $script"
+    else
+        echo "$script is already installed"
+    fi
+done
+
+echo "done"

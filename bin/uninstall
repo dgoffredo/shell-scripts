@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# This script is invoked by ../Makefile
+# It removes symbolic links in $PREFIX to any specified scripts.
+
+# usage: bin/uninstall ./myip ./lanscan [ ... ]
+
+# Exit if a command fails (outside of an `if` or loop condition).
+set -e
+
+PREFIX=${PREFIX:-~/bin}
+
+if ! [ -d "$PREFIX" ]; then
+    exit 0
+fi
+
+for script_path in "$@"; do
+    script=$(basename $script_path)
+    script_full_path=$(realpath $script_path)
+    if [ -e "$PREFIX"/$script ] && [ "$(realpath "$PREFIX"/$script)" = "$script_full_path" ]; then
+        echo "removing  $PREFIX/$script"
+        rm "$PREFIX"/$script
+    fi
+done
+
+echo "done"

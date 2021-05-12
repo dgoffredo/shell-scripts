@@ -15,4 +15,22 @@ be POSIX-only compatible, run with `/bin/sh`.
 
 How
 ---
-Each is documented in comments at the top.
+Each script is documented in comments at the top.
+
+There's a [Makefile](Makefile) with targets that install/uninstall the scripts
+in `~/bin`:
+```console
+$ make help
+To install symbolic links to these scripts in ~/bin, run:
+
+    $ make install
+
+It will not overwrite existing files in ~/bin.
+
+To uninstall symbolic links in ~/bin that were installed previously, run:
+
+    $ make uninstall
+
+It will only remove files that are symbolic links to scripts in this
+repository.
+```
