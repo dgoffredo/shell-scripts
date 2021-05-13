@@ -50,9 +50,9 @@ done
 dig_myip() {
     # usage: dig_myip <DNS server>
     if [ "$ipv6" -eq 1 ]; then
-        dig +short -6 myip.opendns.com aaaa @$1
+        dig +timeout=1 +short -6 myip.opendns.com aaaa @$1
     else
-        dig +short myip.opendns.com @$1
+        dig +timeout=1 +short myip.opendns.com @$1
     fi
 }
 
