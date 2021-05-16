@@ -22,13 +22,22 @@ try_ip() {
         # +short: just the name (not the whole DNS record)
         # -x: reverse lookup (IP -> hostname)
         # sed: unqualify the name (e.g. mylaptop.isp.com -> mylaptop)
-        echo $1 $(dig +short -x $1 | sed 's/\..*$//')
+        printf "$1\t$(dig +short -x $1 | sed 's/\..*$//')\n"
     fi
 }
 
+tmpdir=$(mktemp -d)
+pipe=$tmpdir/pipe
+mkfifo $pipe
+
 # Try the IPs in parallel, and then wait for them to finish.
 for i in $(seq 255); do
-    try_ip 192.168.1.$i &
+    >$pipe try_ip 192.168.1.$i &
 done
 
+<$pipe sort -t . -k 4,4n
+
 wait
+
+rm -r $tmpdir
+
