@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# `del` is like `rm`, but files are moved into a git repository instead.
+
+TRASH="$HOME"/.del
+
+usage() {
+    cat <<END_USAGE
+del - like rm, but files are moved into a git repository rather than deleted
+
+usage:
+
+    $0 FILE ...
+        mv the specified files into a git repository under ~/.del and commit.
+
+    $0 --clean
+        Delete all "trashed" files. 
+
+    $0 -h
+    $0 --help
+        Print this message.
+END_USAGE
+}
+
+clean() {
+    while true; do
+        read -p "Do you want to delete everything under '$TRASH'? (y/n) " response
+        case "$response" in
+            [Yy]* ) 
+                rm -rf "$TRASH"
+                break;;
+            [Nn]* ) 
+                return;;
+            * ) echo "Answer y or n.";;
+        esac
+    done
+}
+
+if [ $# -eq 0 ]; then
+    >&2 usage
+    exit 1
+elif [ "$1" = "-h" -o "$1" = "--help" ]; then
+    usage
+    exit
+elif [ "$1" = "--clean" ]; then
+    clean
+    exit
+fi
+
+# Otherwise, treat the arguments as files to be moved.
+
+if ! [ -d "$TRASH" ]; then
+    mkdir "$TRASH"
+    cd "$TRASH"
+    git init >/dev/null 2>&1
+    cd - >/dev/null
+fi
+
+rm -rf "$TRASH"/*
+
+for f in "$@"; do
+    if ! [ -e "$f" ]; then
+        >&2 echo "skipping the following file, which does not exist: $f"
+        continue
+    fi
+    f=$(realpath "$f")
+    mkdir -p "$TRASH"/"$(dirname "$f")"
+    mv "$f" "$TRASH"/"$f"
+done
+
+cd "$TRASH"
+git add --all >/dev/null
+git commit -m "$0 $*" >/dev/null
