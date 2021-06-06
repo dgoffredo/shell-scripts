@@ -1,17 +1,17 @@
 #!/bin/sh
 
-# `del` is like `rm`, but files are moved into a git repository instead.
+# `del` is like `rm`, but files are moved into a known directory instead.
 
 TRASH="$HOME"/.del
 
 usage() {
     cat <<END_USAGE
-del - like rm, but files are moved into a git repository rather than deleted
+del - like rm, but files are moved into a known directory
 
 usage:
 
     $0 FILE ...
-        mv the specified files into a git repository under ~/.del and commit.
+        mv the specified files into a directory under ~/.del and commit.
 
     $0 --clean
         Delete all "trashed" files. 
@@ -51,12 +51,17 @@ fi
 
 if ! [ -d "$TRASH" ]; then
     mkdir "$TRASH"
-    cd "$TRASH"
-    git init >/dev/null 2>&1
-    cd - >/dev/null
 fi
 
-rm -rf "$TRASH"/*
+make_directory_name() {
+    echo "$TRASH/$(date --utc +%Y-%m-%dT%H:%M:%S.%N)"
+}
+
+dir=$(make_directory_name)
+# Spin until you win.
+while ! mkdir "$dir"; do
+    dir=$(make_directory_name)
+done
 
 for f in "$@"; do
     if ! [ -e "$f" ]; then
@@ -64,10 +69,6 @@ for f in "$@"; do
         continue
     fi
     f=$(realpath "$f")
-    mkdir -p "$TRASH"/"$(dirname "$f")"
-    mv "$f" "$TRASH"/"$f"
+    mkdir -p "$dir"/"$(dirname "$f")"
+    mv "$f" "$dir"/"$f"
 done
-
-cd "$TRASH"
-git add --all >/dev/null
-git commit -m "$0 $*" >/dev/null
