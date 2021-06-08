@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # This script is invoked by ../Makefile
-# It creates symbolic links in $PREFIX for all specified scriptss that don't
+# It creates symbolic links in $PREFIX for all specified scripts that don't
 # already have a link in $PREFIX
 
 # usage: bin/install ./myip ./lanscan [ ... ]

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# Open up a bash shell in the first running Docker container whose name(s)
+# matches the specified sed-style pattern.
+
+usage() {
+    argv0=$1
+    cat <<END_USAGE
+dockersh - Open a bash shell in first container matching a sed pattern.
+
+usage:
+
+    $argv0 PATTERN
+        Use 'docker ps' to find running containers that have a name matching
+	the specified sed PATTERN.  Pick the first matching container and
+	'docker exec' bash within it, attached to the invoking terminal.
+
+    $argv0 -h
+    $argv0 --help
+        Print this message.
+END_USAGE
+}
+
+if [ $# -ne 1 ]; then
+    >&2 usage "$0"
+    exit 1
+elif [ "$1" = '-h' -o "$1" = '--help' ]; then
+    usage "$0"
+    exit
+fi
+
+pattern=$1
+
+# The initial non-spaces are the container ID.
+# Then one or more spaces, and then something containing the pattern
+# (wildcards on both sides).
+# The final "p" prints the transformed line.
+sed_script="s/\(\S\+\)\s\+.*${pattern}.*/\1/p"
+
+# "--quiet" sed doesn't print a line unless you say so.
+container_id=$(\
+    docker ps --format='{{.ID}} {{.Names}}' | \
+    sed --quiet "$sed_script" | \
+    head -1)
+
+docker exec --interactive --tty "$container_id" /bin/bash
+
