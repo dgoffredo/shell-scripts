@@ -1,0 +1,46 @@
+#!/bin/sh
+
+usage() {
+    cat <<END_USAGE
+lspath - list all matches in the PATH for a specified glob pattern
+
+usage:
+
+    $0 GLOB_PATTERNS ...
+        List all files matching any of the specified GLOB_PATTERNS
+	within the \$PATH directories.
+
+	Example:
+
+	    $ $0 sh '?sh'
+	    lrwxrwxrwx  1  root  root  4       Apr  29  15:06  /usr/bin/sh
+            lrwxrwxrwx  1  root  root  21      Apr  29  15:06  /usr/bin/rsh
+            -rwxr-xr-x  1  root  root  723816  Mar  23  10:27  /usr/bin/ssh
+            lrwxrwxrwx  1  root  root  4       Apr  29  15:06  /bin/sh
+            lrwxrwxrwx  1  root  root  21      Apr  29  15:06  /bin/rsh
+            -rwxr-xr-x  1  root  root  723816  Mar  23  10:27  /bin/ssh
+
+
+    $0 --help
+    $0 -h
+        Print this message.
+END_USAGE
+}
+
+
+if [ $# -eq 0 ]; then
+    >&2 usage
+    exit 1
+fi
+
+if [ "$1" = '-h' -o "$1" = '--help' ]; then
+    usage
+    exit
+fi
+
+echo $PATH | sed 's/:/\n/g' | while read path_dir; do
+    for pattern in "$@"; do
+        ls -la "$path_dir"/$pattern 2>/dev/null
+    done
+done | column --table
+
