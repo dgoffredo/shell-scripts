@@ -42,5 +42,5 @@ echo $PATH | sed 's/:/\n/g' | while read path_dir; do
     for pattern in "$@"; do
         ls -la "$path_dir"/$pattern 2>/dev/null
     done
-done | column --table
+done | column --table --output-separator ' '
 
