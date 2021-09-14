@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# $ args foo bar baz
+# argv[0]: args
+# argv[1]: foo
+# argv[2]: bar
+# argv[3]: baz
+# $
+
+i=0
+printf "argv[$i]: $0\n"
+while [ $# -ne 0 ]; do
+    i=$((i + 1))
+    printf "argv[$i]: $1\n"
+    shift
+done
+
