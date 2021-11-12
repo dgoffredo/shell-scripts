@@ -12,4 +12,4 @@ install:
 
 uninstall:
 	bin/uninstall $(SCRIPTS)
-	
+

@@ -1,0 +1,39 @@
+#!/bin/sh
+
+usage() {
+    cat <<END_USAGE
+httpcat - Run HTTP server that echos request and responds with 200 OK
+
+usage:
+    $0 PORT
+        Run an HTTP server that listens on "127.0.0.1:\$PORT". The server
+        prints to standard output all requests it receives, and replies to
+        to each with a 200 OK response without a body.
+
+    $0 --help
+    $0 -h
+        Print this message and exit with status code 0.
+END_USAGE
+}
+
+is_help() {
+    case "$1" in
+        -h|--help) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+if [ $# -ne 1 ]; then
+    >&2 usage
+    exit 1
+fi
+
+if is_help "$1"; then
+    usage
+    exit
+fi
+
+2>&1 socat \
+    "TCP4-LISTEN:$1,reuseaddr,fork" \
+    SYSTEM:">&2 cat -; printf \'HTTP/1.1 200 OK\\r\\n\\r\\n\';"
+
