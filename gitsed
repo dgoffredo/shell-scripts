@@ -1,0 +1,48 @@
+#!/bin/sh
+
+usage() {
+  cat <<'END_USAGE'
+gitsed - Replace patterns in files under git revision control.
+
+Usage:
+
+    gitsed <PATTERN> <REPLACEMENT> [<FLAGS>]
+        Replace all appearances of the specified PATTERN with the
+        specified REPLACEMENT, subject to the specified FLAGS,
+        i.e.
+
+            sed -i 's/<PATTERN>/<REPLACEMENT>/<FLAGS>' <...>
+
+        The input files ("<...>") are obtained using "git grep," i.e.
+
+            git grep '<PATTERN>'
+
+        Forward slashes must be escaped with a backslash is the PATTERN
+        and in the REPLACEMENT.
+
+    gitsed --help
+    gitsed -h
+        Print this message.
+
+END_USAGE
+}
+
+case "$1" in
+  --help|-h)
+    usage
+    exit ;;
+  *) ;;
+esac
+
+if [ $# -lt 2 ]; then
+  >&2 usage
+  >&2 printf 'Specify at least two arguments: <PATTERN> <REPLACEMENT>\n'
+  exit 1
+fi
+
+pattern=$1
+replacement=$2
+flags=$3
+
+git grep -l "$pattern" | xargs sed -i "s/$pattern/$replacement/$flags"
+
