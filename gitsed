@@ -17,7 +17,7 @@ Usage:
 
             git grep '<PATTERN>'
 
-        Forward slashes must be escaped with a backslash is the PATTERN
+        Forward slashes must be escaped with a backslash in the PATTERN
         and in the REPLACEMENT.
 
     gitsed --help
