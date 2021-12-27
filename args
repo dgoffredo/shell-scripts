@@ -1,12 +1,14 @@
 #!/bin/sh
 
 # $ args foo bar baz
+# $#: 3
 # argv[0]: args
 # argv[1]: foo
 # argv[2]: bar
 # argv[3]: baz
 # $
 
+printf '$#: %d\n' $#
 i=0
 printf "argv[$i]: $0\n"
 while [ $# -ne 0 ]; do

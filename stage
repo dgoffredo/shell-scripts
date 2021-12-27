@@ -1,0 +1,59 @@
+#!/bin/sh
+
+usage() {
+  echo <<'END_USAGE'
+stage - Run a command with an interactive prompt for restart/quit/etc.
+
+usage:
+
+  stage COMMAND ...
+    Run the specified COMMAND ... in the background and start the
+    `stage` command prompt.
+
+  stage --help
+  stage -h
+    Print this message.
+
+The `stage` command runs an arbitrary program in the background
+and provides a command prompt to standard input.  The command prompt
+understands the following commands:
+
+  quit
+  exit
+    Terminate the background process and exit.
+
+  again
+    Terminate the background process, and then run it again.
+    Some empty lines will be printed to standard output between runs.
+END_USAGE
+}
+
+if [ $# -eq 1 ]; then
+  case "$1" in
+  -h|--help)
+    usage
+    exit ;;
+  *) ;;
+  esac
+fi
+
+"$@" &
+pid=$!
+
+while read -r command; do
+  case "$command" in
+  quit|exit)
+    kill "$pid"
+    wait "$pid" 
+    exit ;;
+  again)
+    kill "$pid"
+    wait "$pid"
+    printf '\n\n\n\n\n\n\n\n\n\n\n'
+    "$@" &
+    pid=$! ;;
+  *)
+    >&2 printf 'Unknown command: %s\n' "$command"
+  esac
+done
+
