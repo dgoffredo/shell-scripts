@@ -1,7 +1,7 @@
 #!/bin/sh
 
 usage() {
-  echo <<'END_USAGE'
+  cat <<'END_USAGE'
 stage - Run a command with an interactive prompt for restart/quit/etc.
 
 usage:
@@ -25,6 +25,7 @@ understands the following commands:
   again
     Terminate the background process, and then run it again.
     Some empty lines will be printed to standard output between runs.
+
 END_USAGE
 }
 
