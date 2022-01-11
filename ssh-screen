@@ -7,9 +7,10 @@ ssh-screen - Run GNU screen in an ssh session
 Usage:
 
     ssh-screen <CONNECTION ARGS> ...
-        Run the following command:
+        Open an ssh connection with a tty and run GNU screen.
+	Specifically, do the following:
 
-	$ ssh -t <CONNECTION ARGS> -- screen -R
+	$ ssh -t <CONNECTION ARGS> -- screen -R -U
 
     ssh-screen --help
     ssh-screen -h
@@ -29,5 +30,5 @@ case "$1" in
   *) ;;
 esac
 
-ssh -t "$@" -- screen -R
+ssh -t "$@" -- screen -R -U
 
