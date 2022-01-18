@@ -1,0 +1,34 @@
+#!/bin/sh
+
+usage() {
+  cat <<'END_USAGE'
+ssh-screen - Run GNU screen in an ssh session
+
+Usage:
+
+    ssh-screen <CONNECTION ARGS> ...
+        Open an ssh connection with a tty and run GNU screen.
+	Specifically, do the following:
+
+	$ ssh -t <CONNECTION ARGS> -- screen -R -U
+
+    ssh-screen --help
+    ssh-screen -h
+    ssh-screen
+        Print this message.
+
+END_USAGE
+}
+
+if [ $# -eq 0 ]; then
+  usage
+  exit
+fi
+
+case "$1" in
+  -h|--help) usage; exit ;;
+  *) ;;
+esac
+
+ssh -t "$@" -- screen -R -U
+

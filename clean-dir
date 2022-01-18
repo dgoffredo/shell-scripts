@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# clean-dir <PATH-TO-DIRECTORY>
+
+if [ $# -ne 1 ]; then
+  >&2 echo 'usage: clean-dir <PATH-TO-DIRECTORY>'
+  exit 1
+elif [ "$1" = '-h' -o "$1" = '--help' ]; then
+  echo 'usage: clean-dir <PATH-TO-DIRECTORY>'
+  exit
+elif ! [ -d "$1" ]; then
+  >&2 echo "$1 is not a directory"
+  exit 2
+fi
+
+workspace=$(mktemp -d)
+mkfifo "$workspace"/pipe
+
+# Sort the contents of the directory by descending size, and for each print
+# a human-readable summary to the pipe.
+du -sb "$1"/* 2>/dev/null | sort -rn | awk '{print $2}' | xargs du -sh >"$workspace/pipe" &
+
+while read -r size path; do
+  printf '%s\t%s\nremove? [yN]: ' "$size" "$path"
+  </dev/tty read -r response
+  case "$response" in
+    [yY])
+      printf 'removing %s\n' "$path"
+      rm -rf "$path" ;;
+    *) ;;
+  esac
+  printf '\n'
+done <"$workspace/pipe"
+
+wait
+rm -r "$workspace"
+
