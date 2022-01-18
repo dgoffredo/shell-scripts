@@ -1,7 +1,7 @@
 #!/bin/sh
 
 usage() {
-  echo <<'END_USAGE'
+  cat <<'END_USAGE'
 stage - Run a command with an interactive prompt for restart/quit/etc.
 
 usage:
@@ -12,7 +12,7 @@ usage:
 
   stage --help
   stage -h
-    Print this message.
+    Print this message and quit.
 
 The `stage` command runs an arbitrary program in the background
 and provides a command prompt to standard input.  The command prompt
@@ -25,6 +25,9 @@ understands the following commands:
   again
     Terminate the background process, and then run it again.
     Some empty lines will be printed to standard output between runs.
+
+  help
+    Print this message.
 END_USAGE
 }
 
@@ -40,6 +43,8 @@ fi
 "$@" &
 pid=$!
 
+trap 'kill "$pid"; wait;' INT HUP TERM QUIT
+
 while read -r command; do
   case "$command" in
   quit|exit)
@@ -52,6 +57,8 @@ while read -r command; do
     printf '\n\n\n\n\n\n\n\n\n\n\n'
     "$@" &
     pid=$! ;;
+  help)
+    usage ;;
   *)
     >&2 printf 'Unknown command: %s\n' "$command"
   esac
