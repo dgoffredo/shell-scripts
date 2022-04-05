@@ -1,0 +1,56 @@
+#!/bin/sh
+
+usage() {
+  cat <<'END_USAGE'
+in-place - Overwrite a command's input with its output.
+
+usage:
+
+    in-place <FILE> <COMMAND> ...
+        Run <COMMAND> with <FILE> as input, and write the resulting output
+        to <FILE>.
+
+    in-place --help
+    in-place -h
+        Print this message.
+
+END_USAGE
+}
+
+if [ $# -eq 0 ]; then
+  >&2 usage
+  exit 1
+fi
+
+if [ $# -eq 1 ]; then
+  case "$1" in
+    -h|--help)
+      usage
+      exit ;;
+    *)
+      >&2 usage
+      exit 1 ;;
+  esac
+fi
+
+file=$1
+shift
+
+dir=$(mktemp -d)
+<"$file" >"$dir/tmp" "$@"
+
+rcode=$?
+if [ "$rcode" -ne 0 ]; then
+  rm -r "$dir"
+  exit "$rcode"
+fi
+
+mv "$dir/tmp" "$file"
+rcode=$?
+if [ "$rcode" -ne 0 ]; then
+  rm -r "$dir"
+  exit "$rcode"
+fi
+
+rm -r "$dir"
+
