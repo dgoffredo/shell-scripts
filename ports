@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sudo lsof -iTCP -sTCP:LISTEN -P -n
+
