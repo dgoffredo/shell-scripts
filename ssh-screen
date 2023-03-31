@@ -30,5 +30,5 @@ case "$1" in
   *) ;;
 esac
 
-ssh -t "$@" -- screen -R -U
+ssh -t "$@" -- screen -R -U -q
 
