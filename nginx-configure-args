@@ -1,0 +1,11 @@
+#!/bin/sh
+
+arglines() {
+  while [ $# -ne 0 ]; do
+    echo "$1"
+    shift
+  done
+}
+
+eval "arglines $(2>&1 "${NGINX:-nginx}" -V | sed -n 's/^configure arguments: \(.*\)/\1/p')"
+
