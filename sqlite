@@ -1,0 +1,7 @@
+#!/bin/sh
+
+sqlite3 \
+  -cmd '.mode lines' \
+  -cmd '.headers on' \
+  -cmd '.tables' \
+  "$@"
