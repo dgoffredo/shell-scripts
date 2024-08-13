@@ -3,5 +3,6 @@
 sqlite3 \
   -cmd '.mode columns' \
   -cmd '.headers on' \
+  -cmd '.timeout 1000' \
   -cmd '.tables' \
   "$@"
