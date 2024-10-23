@@ -1,0 +1,8 @@
+#!/bin/sh
+
+remove_untracked_files() {
+  git ls-files --other --exclude-standard | xargs rm -rf
+}
+
+remove_untracked_files
+
