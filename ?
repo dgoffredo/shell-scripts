@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cmd=$(command -v "$1")
+shift
+if [ $# -ne 0 ]; then
+  "$@" "$cmd"
+else
+  echo "$cmd"
+fi
+
