@@ -1,0 +1,34 @@
+#!/bin/sh
+
+usage() {
+  cat <<'END_USAGE'
+mosh-screen - Run GNU screen in a mosh session
+
+Usage:
+
+    mosh-screen <CONNECTION ARGS> ...
+        Open a mosh connection and run GNU screen.
+	Specifically, do the following:
+
+	$ mosh <CONNECTION ARGS> -- screen -R -U -q
+
+    mosh-screen --help
+    mosh-screen -h
+    mosh-screen
+        Print this message.
+
+END_USAGE
+}
+
+if [ $# -eq 0 ]; then
+  usage
+  exit
+fi
+
+case "$1" in
+  -h|--help) usage; exit ;;
+  *) ;;
+esac
+
+mosh "$@" -- screen -R -U -q
+

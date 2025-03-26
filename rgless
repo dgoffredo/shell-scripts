@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rg --color=always "$@" | less -R
+
