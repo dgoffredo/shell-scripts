@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# TODO: document
+
+file=$1
+line_num=$2
+pattern=$3
+
+git rev-list HEAD | while read commit; do
+  line=$(git show "$commit:$file" 2>/dev/null | sed -n "$line_num{p;q}")
+  if echo "$line" | grep -q "$pattern"; then
+    echo "Found in commit $commit:"
+    echo "$file:$line_num: $line"
+    break
+  fi
+done
+
