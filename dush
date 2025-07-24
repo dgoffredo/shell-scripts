@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# The name comes from "du -sh".
+
+find . -mindepth 1 -maxdepth 1 | xargs du -sh | sort -h
+
